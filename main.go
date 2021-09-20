@@ -13,6 +13,8 @@ func main() {
 	router.GET("/", rootHandler)
 
 	router.GET("/hello", HelloHandler)
+	router.GET("/books/:id", booksHandler)
+	router.GET("/query", queryHandler)
 	router.Run(":8888")
 }
 
@@ -28,4 +30,16 @@ func HelloHandler(c *gin.Context) {
 		"title":    "Halo dunia",
 		"subtitle": "Halo kehidupan",
 	})
+}
+
+func booksHandler(c *gin.Context) {
+	id := c.Param("id")
+
+	c.JSON(http.StatusOK, gin.H{"id": id})
+}
+
+func queryHandler(c *gin.Context) {
+	title := c.Query("title")
+
+	c.JSON(http.StatusOK, gin.H{"id": title})
 }
