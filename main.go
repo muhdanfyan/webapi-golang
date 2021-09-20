@@ -2,6 +2,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -13,8 +14,10 @@ func main() {
 	router.GET("/", rootHandler)
 
 	router.GET("/hello", HelloHandler)
-	router.GET("/books/:id", booksHandler)
+	router.GET("/books/:id/:title", booksHandler)
 	router.GET("/query", queryHandler)
+	router.POST("/book", postBookHandler)
+
 	router.Run(":8888")
 }
 
@@ -34,12 +37,36 @@ func HelloHandler(c *gin.Context) {
 
 func booksHandler(c *gin.Context) {
 	id := c.Param("id")
+	title := c.Param("title")
 
-	c.JSON(http.StatusOK, gin.H{"id": id})
+	c.JSON(http.StatusOK, gin.H{"id": id, "title": title})
 }
 
 func queryHandler(c *gin.Context) {
 	title := c.Query("title")
+	price := c.Query("price")
+	c.JSON(http.StatusOK, gin.H{"id": title, "price": price})
+}
 
-	c.JSON(http.StatusOK, gin.H{"id": title})
+type BookInput struct {
+	Title    string
+	Price    int
+	SubTitle string `json:"sub_title"`
+}
+
+func postBookHandler(c *gin.Context) {
+	var bookInput BookInput
+
+	err := c.ShouldBindJSON(&bookInput)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	// title := c.Query("title")
+	// price := c.Query("price")
+	c.JSON(http.StatusOK, gin.H{
+		"title":     bookInput.Title,
+		"price":     bookInput.Price,
+		"sub_title": bookInput.SubTitle,
+	})
 }
