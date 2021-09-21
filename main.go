@@ -50,7 +50,7 @@ func queryHandler(c *gin.Context) {
 
 type BookInput struct {
 	Title string `json:"title" binding:"required"`
-	Price int    `json:"price" binding:"required, number"`
+	Price int    `json:"price" binding:"required"`
 }
 
 func postBookHandler(c *gin.Context) {
@@ -60,7 +60,7 @@ func postBookHandler(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
-		fmt.Println(err)
+		fmt.Print(err)
 		return
 	}
 
