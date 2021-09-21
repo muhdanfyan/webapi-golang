@@ -2,7 +2,7 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -16,9 +16,9 @@ func main() {
 	router.GET("/hello", HelloHandler)
 	router.GET("/books/:id/:title", booksHandler)
 	router.GET("/query", queryHandler)
-	router.POST("/book", postBookHandler)
+	router.POST("/books", postBookHandler)
 
-	router.Run(":8888")
+	router.Run()
 }
 
 func rootHandler(c *gin.Context) {
@@ -49,9 +49,8 @@ func queryHandler(c *gin.Context) {
 }
 
 type BookInput struct {
-	Title    string
-	Price    int
-	SubTitle string `json:"sub_title"`
+	Title string `json:"title" binding:"required"`
+	Price int    `json:"price" binding:"required, number"`
 }
 
 func postBookHandler(c *gin.Context) {
@@ -60,13 +59,13 @@ func postBookHandler(c *gin.Context) {
 	err := c.ShouldBindJSON(&bookInput)
 
 	if err != nil {
-		log.Fatal(err)
+		c.JSON(http.StatusBadRequest, err)
+		fmt.Println(err)
+		return
 	}
-	// title := c.Query("title")
-	// price := c.Query("price")
+
 	c.JSON(http.StatusOK, gin.H{
-		"title":     bookInput.Title,
-		"price":     bookInput.Price,
-		"sub_title": bookInput.SubTitle,
+		"title": bookInput.Title,
+		"price": bookInput.Price,
 	})
 }
